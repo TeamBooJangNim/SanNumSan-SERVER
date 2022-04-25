@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { User } from "./entities/user.entities";
+import { User } from "./user.entities";
 
 @Injectable()
 export class UserService {
@@ -12,7 +12,6 @@ export class UserService {
   getOne(id: number): User {
     const user = this.users.find(user => user.id === Number(id));
     if (!user) {
-      // 클라이언트는 error.message에 user id ${id} not found이 값이 들어갑니다. status-code는 nest가 정해준 값으로 들어갑니다
       throw new NotFoundException(`user id ${id} not found`);
     }
     return user;
