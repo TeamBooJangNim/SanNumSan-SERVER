@@ -19,11 +19,6 @@ import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Get()
-  getAll(): User[] {
-    return this.authService.getAll();
-  }
-
   @Get('/kakaologin')
   loginkakao(@Res() res: any): void {
     const url = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_KEY}&redirect_uri=${process.env.KAKAO_URI}&response_type=code`;
