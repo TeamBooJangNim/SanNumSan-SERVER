@@ -32,7 +32,7 @@ export class AuthController {
 
   @Get('/kakao/callback')
   async kakaologin(@Query() query: KakaoCodeDto): Promise<User> {
-    const code: string = query['code'];
+    const code: string = query.code;
     const res: KakaoTokenDto = await this.authService.getKakaoAccessToken(
       code,
       process.env.KAKAO_KEY,

@@ -9,18 +9,6 @@ import { KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
 export class AuthService {
   private users: User[] = [];
 
-  getAll(): User[] {
-    return this.users;
-  }
-
-  getOne(id: number): User {
-    const user: User = this.users.find((user) => user.id === Number(id));
-    if (!user) {
-      throw new NotFoundException(`user id ${id} not found`);
-    }
-    return user;
-  }
-
   async getKakaoAccessToken(
     code: string,
     client_id: string,
