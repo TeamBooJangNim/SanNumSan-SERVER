@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { User } from "./user.entities";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from './user.entities';
 
 @Injectable()
 export class UserService {
@@ -10,7 +10,7 @@ export class UserService {
   }
 
   getOne(id: number): User {
-    const user = this.users.find(user => user.id === Number(id));
+    const user = this.users.find((user) => user.id === Number(id));
     if (!user) {
       throw new NotFoundException(`user id ${id} not found`);
     }
@@ -19,14 +19,14 @@ export class UserService {
 
   deleteOne(id: number): boolean {
     this.getOne(id);
-    this.users = this.users.filter(user => user.id !== Number(id));
+    this.users = this.users.filter((user) => user.id !== Number(id));
     return true;
   }
 
   create(userData: any) {
     this.users.push({
       id: this.users.length + 1,
-      ...userData
+      ...userData,
     });
   }
 
