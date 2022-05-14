@@ -6,15 +6,17 @@ import fetch from 'cross-fetch';
 import { KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
 import { CollectionReference } from '@google-cloud/firestore';
 import db from 'src/util/db';
+import responseMessage from 'src/constants/responseMessage';
 
 @Injectable()
 export class AuthService {
   private users: UserDocument[] = [];
   private logger: Logger = new Logger(AuthService.name);
-  constructor(
-    @Inject(UserDocument.collectionName)
-    private memberCollection: CollectionReference<UserDocument>,
-  ) {}
+  // constructor(
+  //   @Inject(UserDocument.collectionName)
+  //   private memberCollection: CollectionReference<UserDocument>,
+  // ) {}
+  private memberCollection = db.collection('member');
 
   async getKakaoAccessToken(
     code: string,
@@ -41,27 +43,28 @@ export class AuthService {
     }).then((res) => res.json());
   }
 
-  async getUserByUserCode(usercode): Promise<UserDocument> {
-    const user: UserDocument = this.users.find(
-      (user) => user.code === usercode.id,
-    );
-    if (!user) {
-      throw new NotFoundException(
-        `user code ${usercode.id} not found, register requested`,
-      );
-    }
+  async getUserByUserCode(usercode): Promise<any> {
+    let user: UserDocument;
+    const code: number = usercode.id;
+    const docs: any = await this.memberCollection
+      .where('code', '==', code)
+      .get();
+    docs.forEach((doc) => {
+      user = doc.data();
+    });
     return user;
   }
 
   async register(userData): Promise<UserDocument> {
     const name = 'test';
-    db.collection('member').add({
+    const newUser = {
       name: name,
       code: userData.id,
       provider: 'kakao',
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
-    });
-    return userData;
+    };
+    await this.memberCollection.add(newUser);
+    return newUser;
   }
 }

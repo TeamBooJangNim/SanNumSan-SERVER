@@ -14,6 +14,9 @@ import { AuthService } from './auth.service';
 import { UserDocument } from '../user/user.documents';
 import 'dotenv/config';
 import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
+import statusCode from 'src/constants/statusCode';
+import util from 'src/util/util';
+import message from 'src/constants/responseMessage';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +29,10 @@ export class AuthController {
   }
 
   @Get('/kakao/callback')
-  async kakaologin(@Query() query: KakaoCodeDto): Promise<UserDocument> {
+  async kakaologin(
+    @Query() query: KakaoCodeDto,
+    @Res() response: any,
+  ): Promise<any> {
     const code: string = query.code;
     const res: KakaoTokenDto = await this.authService.getKakaoAccessToken(
       code,
@@ -36,7 +42,17 @@ export class AuthController {
     const usercode: KakaoIdDto = await this.authService.getKakaoUserCode(
       res.access_token,
     );
-    return this.authService.getUserByUserCode(usercode);
+    const result: Promise<any> = await this.authService.getUserByUserCode(
+      usercode,
+    );
+    if (!result)
+      return response
+        .status(statusCode.OK)
+        .send(util.fail(statusCode.OK, message.NEED_REGISTER, usercode.id));
+    else
+      return response
+        .status(statusCode.OK)
+        .send(util.fail(statusCode.OK, message.LOGIN_SUCCESS, result));
   }
 
   @Post('/kakao/register')

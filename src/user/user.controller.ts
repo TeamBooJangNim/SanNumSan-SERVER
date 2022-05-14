@@ -20,23 +20,23 @@ export class UserController {
     return this.userService.getAll();
   }
 
-  @Get('/:id')
-  getOne(@Param('id') userId: number): UserDocument {
-    return this.userService.getOne(userId);
-  }
+  // @Get('/:id')
+  // getOne(@Param('id') userId: number): UserDocument {
+  //   return this.userService.getOne(userId);
+  // }
 
-  @Post()
-  create(@Body() userData: any) {
-    return this.userService.create(userData);
-  }
+  // @Post()
+  // create(@Body() userData: any) {
+  //   return this.userService.create(userData);
+  // }
 
-  @Delete('/:id')
-  remove(@Param('id') userId: number) {
-    return this.userService.deleteOne(userId);
-  }
+  // @Delete('/:id')
+  // remove(@Param('id') userId: number) {
+  //   return this.userService.deleteOne(userId);
+  // }
 
-  @Patch('/:id')
-  patch(@Param('id') userId: number, @Body() updateData: any) {
-    return this.userService.update(userId, updateData);
-  }
+  // @Patch('/:id')
+  // patch(@Param('id') userId: number, @Body() updateData: any) {
+  //   return this.userService.update(userId, updateData);
+  // }
 }
