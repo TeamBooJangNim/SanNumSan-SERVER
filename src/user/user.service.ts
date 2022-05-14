@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './user.entities';
+import { UserDocument } from './user.documents';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  private users: UserDocument[] = [];
 
-  getAll(): User[] {
+  getAll(): UserDocument[] {
     return this.users;
   }
 
-  getOne(id: number): User {
+  getOne(id: number): UserDocument {
     const user = this.users.find((user) => user.id === Number(id));
     if (!user) {
       throw new NotFoundException(`user id ${id} not found`);

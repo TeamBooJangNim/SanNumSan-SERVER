@@ -11,7 +11,7 @@ import {
   Redirect,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from '../user/user.entities';
+import { UserDocument } from '../user/user.documents';
 import 'dotenv/config';
 import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
 
@@ -26,7 +26,7 @@ export class AuthController {
   }
 
   @Get('/kakao/callback')
-  async kakaologin(@Query() query: KakaoCodeDto): Promise<User> {
+  async kakaologin(@Query() query: KakaoCodeDto): Promise<UserDocument> {
     const code: string = query.code;
     const res: KakaoTokenDto = await this.authService.getKakaoAccessToken(
       code,
@@ -40,7 +40,7 @@ export class AuthController {
   }
 
   @Post('/kakao/register')
-  kakaoregister(@Body() body: KakaoIdDto): User {
+  kakaoregister(@Body() body: KakaoIdDto): Promise<UserDocument> {
     return this.authService.register(body);
   }
 }

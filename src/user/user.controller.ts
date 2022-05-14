@@ -8,7 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { User } from './user.entities';
+import { UserDocument } from './user.documents';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -16,12 +16,12 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  getAll(): User[] {
+  getAll(): UserDocument[] {
     return this.userService.getAll();
   }
 
   @Get('/:id')
-  getOne(@Param('id') userId: number): User {
+  getOne(@Param('id') userId: number): UserDocument {
     return this.userService.getOne(userId);
   }
 
