@@ -12,3 +12,15 @@ export class KakaoCodeDto {
 export class KakaoTokenDto {
   access_token: string;
 }
+
+export class KakaoAuthDto {
+  name: string;
+  access_token: string;
+  provider: string;
+}
+
+export class KakaoRegDto {
+  name: string;
+  code: number;
+  provider: string;
+}

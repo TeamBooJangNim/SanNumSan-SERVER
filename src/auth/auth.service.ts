@@ -55,12 +55,23 @@ export class AuthService {
     return user;
   }
 
-  async register(userData): Promise<UserDocument> {
-    const name = 'test';
+  // async getUserByName(username): Promise<any> {
+  //   let user: UserDocument;
+  //   const name: number = username;
+  //   const docs: any = await this.memberCollection
+  //     .where('name', '==', name)
+  //     .get();
+  //   docs.forEach((doc) => {
+  //     user = doc.data();
+  //   });
+  //   return user;
+  // }
+
+  async register(userData): Promise<any> {
     const newUser: UserDocument = {
-      name: name,
-      code: userData.id,
-      provider: 'kakao',
+      name: userData.name,
+      code: userData.code,
+      provider: userData.provider,
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
     };

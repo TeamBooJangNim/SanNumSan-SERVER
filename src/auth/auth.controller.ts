@@ -13,11 +13,18 @@ import {
 import { AuthService } from './auth.service';
 import { UserDocument } from '../user/user.documents';
 import 'dotenv/config';
-import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from '../dto/auth.kakao.dto';
+import {
+  KakaoAuthDto,
+  KakaoCodeDto,
+  KakaoIdDto,
+  KakaoRegDto,
+  KakaoTokenDto,
+} from '../dto/auth.kakao.dto';
 import statusCode from 'src/constants/statusCode';
 import util from 'src/util/util';
 import message from 'src/constants/responseMessage';
 import jwtHandlers from 'src/util/jwtHandlers';
+import { user } from 'firebase-functions/v1/auth';
 
 @Controller('auth')
 export class AuthController {
@@ -30,42 +37,68 @@ export class AuthController {
   }
 
   @Get('/kakao/callback')
-  async kakaologin(
+  async kakaoLogin(
     @Query() query: KakaoCodeDto,
     @Res() response: any,
   ): Promise<any> {
     const code: string = query.code;
-    const res: KakaoTokenDto = await this.authService.getKakaoAccessToken(
+    const token: KakaoTokenDto = await this.authService.getKakaoAccessToken(
       code,
       process.env.KAKAO_KEY,
       process.env.KAKAO_URI,
     );
     const usercode: KakaoIdDto = await this.authService.getKakaoUserCode(
-      res.access_token,
+      token.access_token,
     );
     const result: Promise<UserDocument> =
       await this.authService.getUserByUserCode(usercode);
     if (!result) {
       return response
         .status(statusCode.OK)
-        .send(util.fail(statusCode.OK, message.NEED_REGISTER, usercode.id));
+        .send(
+          util.fail(statusCode.OK, message.NEED_REGISTER, token.access_token),
+        );
     } else {
       const usercode: number = result['code'];
       const username: string = result['name'];
-      const access_token = jwtHandlers.sign({
+      const accessToken = jwtHandlers.sign({
         code: usercode,
         name: username,
       });
       return response
         .status(statusCode.OK)
-        .send(
-          util.fail(statusCode.OK, message.LOGIN_SUCCESS, { access_token }),
-        );
+        .send(util.fail(statusCode.OK, message.LOGIN_SUCCESS, { accessToken }));
     }
   }
 
   @Post('/kakao/register')
-  kakaoregister(@Body() body: KakaoIdDto): Promise<UserDocument> {
-    return this.authService.register(body);
+  async kakaoRegister(
+    @Body() body: KakaoAuthDto,
+    @Res() response: any,
+  ): Promise<any> {
+    const kakaoProfile: KakaoIdDto = await this.authService.getKakaoUserCode(
+      body.access_token,
+    );
+    const targetUser: KakaoRegDto = {
+      name: body.name,
+      code: kakaoProfile.id,
+      provider: body.provider,
+    };
+
+    const newUser: Promise<UserDocument> = await this.authService.register(
+      targetUser,
+    );
+    const usercode: number = newUser['code'];
+    const username: string = newUser['name'];
+    const accessToken = jwtHandlers.sign({
+      code: usercode,
+      name: username,
+    });
+    return response.status(statusCode.OK).send(
+      util.fail(statusCode.OK, message.REGISTER_SUCCESS, {
+        newUser: user,
+        accessToken,
+      }),
+    );
   }
 }
