@@ -3,7 +3,7 @@ import { Strategy } from 'passport-kakao';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UserDocument } from '../user/user.documents';
 import fetch from 'cross-fetch';
-import { KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
+import { KakaoIdDto, KakaoTokenDto } from '../dto/auth.kakao.dto';
 import { CollectionReference } from '@google-cloud/firestore';
 import db from 'src/util/db';
 import responseMessage from 'src/constants/responseMessage';
@@ -57,7 +57,7 @@ export class AuthService {
 
   async register(userData): Promise<UserDocument> {
     const name = 'test';
-    const newUser = {
+    const newUser: UserDocument = {
       name: name,
       code: userData.id,
       provider: 'kakao',

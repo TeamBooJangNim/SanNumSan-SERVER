@@ -13,10 +13,11 @@ import {
 import { AuthService } from './auth.service';
 import { UserDocument } from '../user/user.documents';
 import 'dotenv/config';
-import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from './dto/auth.kakao.dto';
+import { KakaoCodeDto, KakaoIdDto, KakaoTokenDto } from '../dto/auth.kakao.dto';
 import statusCode from 'src/constants/statusCode';
 import util from 'src/util/util';
 import message from 'src/constants/responseMessage';
+import jwtHandlers from 'src/util/jwtHandlers';
 
 @Controller('auth')
 export class AuthController {
@@ -42,17 +43,25 @@ export class AuthController {
     const usercode: KakaoIdDto = await this.authService.getKakaoUserCode(
       res.access_token,
     );
-    const result: Promise<any> = await this.authService.getUserByUserCode(
-      usercode,
-    );
-    if (!result)
+    const result: Promise<UserDocument> =
+      await this.authService.getUserByUserCode(usercode);
+    if (!result) {
       return response
         .status(statusCode.OK)
         .send(util.fail(statusCode.OK, message.NEED_REGISTER, usercode.id));
-    else
+    } else {
+      const usercode: number = result['code'];
+      const username: string = result['name'];
+      const access_token = jwtHandlers.sign({
+        code: usercode,
+        name: username,
+      });
       return response
         .status(statusCode.OK)
-        .send(util.fail(statusCode.OK, message.LOGIN_SUCCESS, result));
+        .send(
+          util.fail(statusCode.OK, message.LOGIN_SUCCESS, { access_token }),
+        );
+    }
   }
 
   @Post('/kakao/register')

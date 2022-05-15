@@ -23,10 +23,8 @@ export class PostService {
   private logger: Logger = new Logger(PostService.name);
   constructor(
     @Inject(PostDocument.collectionName)
-    private postCollection: CollectionReference<PostDocument>,
-  ) // @Inject(MountainDocument.collectionName)
-  // private mountainCollection: CollectionReference<MountainDocument>,
-  {}
+    private postCollection: CollectionReference<PostDocument>, // @Inject(MountainDocument.collectionName) // private mountainCollection: CollectionReference<MountainDocument>,
+  ) {}
 
   async writePost(body) {
     // const name = body.name;
