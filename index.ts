@@ -20,4 +20,4 @@ export const api = functions.region('asia-northeast3')
   .https.onRequest(async (request, response) => {
     await createFunction(expressServer);
     expressServer(request, response);
-  });
+});
